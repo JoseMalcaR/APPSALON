@@ -1,13 +1,18 @@
 <h1 class="nombre-pagina">Crear Cuenta</h1>
 <p class="descripcion-pagina">Llena el formulario para crear una cuenta</p>
 
-<form class="formulario" method="POST" action="crear-cuenta">
+<?php 
+    include_once __DIR__ . '/../templates/alertas.php';
+?>
+
+<form class="formulario" method="POST" action="/crear-cuenta">
     <div class="campo">
         <label for="nombre">Nombre</label>
         <input type="text" 
         id="nombre" 
         name="nombre" 
         placeholder="Tu Nombre"
+        value="<?php echo s($usuario->nombre); ?>"
         />
 
     </div>
@@ -18,6 +23,7 @@
         id="apellido" 
         name="apellido" 
         placeholder="Tu Apellido"
+        value="<?php echo s($usuario->apellido); ?>"
         />
     </div>
         
@@ -27,6 +33,7 @@
         id="telefono" 
         name="telefono" 
         placeholder="Tu Telefono"
+        value="<?php echo s($usuario->telefono); ?>"
         />
     </div>
 
@@ -36,6 +43,7 @@
         id="email" 
         name="email" 
         placeholder="Tu Email"
+        value="<?php echo s($usuario->email); ?>"
         />
     </div>
 
