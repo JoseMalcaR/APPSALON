@@ -54,6 +54,18 @@ class Usuario extends ActiveRecord {
 
         return self::$alertas;
     }
+    // Validar Login de Usuarios
+    public function validarLogin() {
+        if(!$this->email) {
+            self::$alertas['error'][] = 'El Email es Obligatorio';
+        }
+
+        if(!$this->password) {
+            self::$alertas['error'][] = 'El Password es Obligatorio';
+        }
+
+        return self::$alertas;
+    }
 
     //Revisa si el usuario ya existe
     public function existeUsuario(){
@@ -77,4 +89,14 @@ class Usuario extends ActiveRecord {
         $this->token = uniqid();
     }
 
+    public function comprobarPasswordAndVerificado($password) {
+        $resultado = password_verify($password, $this->password);
+
+        if(!$resultado || !$this->confirmado) {
+            self::$alertas['error'][] = 'Password Incorrecto o tu cuenta no ha sido confirmada';
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

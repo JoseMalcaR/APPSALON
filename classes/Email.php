@@ -20,14 +20,14 @@ class Email {
             //Crear el objeto de email
             $mail = new PHPMailer();
             $mail->isSMTP();
-            $mail->Host = $_ENV['EMAIL_HOST'];
+            $mail->Host = $_ENV['SMTP_HOST'];
             $mail->SMTPAuth = true;
-            $mail->Port = $_ENV['EMAIL_PORT'];
-            $mail->Username = $_ENV['EMAIL_USER'];
-            $mail->Password = $_ENV['EMAIL_PASS'];
+            $mail->Port = $_ENV['SMTP_PORT'];
+            $mail->Username = $_ENV['SMTP_USERNAME'];
+            $mail->Password = $_ENV['SMTP_PASSWORD'];
 
-            $mail->setFrom('cuentas@appsalon.com');
-            $mail->addAddress('cuentas@appsalon.com', 'AppSalon.com');
+            $mail->setFrom($_ENV['SMTP_FROM_EMAIL'], $_ENV['SMTP_FROM_NAME']);
+            $mail->addAddress($this->email, $this->nombre);
             $mail->Subject = 'Confirma tu cuenta';
 
             
@@ -38,7 +38,7 @@ class Email {
             $contenido = '<html>';
             $contenido .= '<p><strong>Hola ' . $this->nombre . '</strong></p>';
             $contenido .= '<p>Has creado tu cuenta en AppSalon, solo debes confirmarla presionando el siguiente enlace</p>';
-            $contenido .= '<p>Presiona aquí: <a href="https://localhost:8000/confirmar-cuenta?token="' . $this->token . '">Confirmar Cuenta</a></p>';
+            $contenido .= '<p>Presiona aquí: <a href="http://localhost:8000/confirmar-cuenta?token=' . $this->token . '">Confirmar Cuenta</a></p>';
             $contenido .= '<p>Si tu no solicitaste esta cuenta, puedes ignorar este mensaje</p>';
             $contenido .= '</html>';
             $mail->Body = $contenido;

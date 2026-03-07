@@ -119,6 +119,16 @@ class ActiveRecord {
         return array_shift( $resultado ) ;
     }
 
+    // Busca un registro por una columna específica
+    /**
+     * @return static|null
+     */
+     public static function where($columna, $valor) {
+        $query = "SELECT * FROM " . static::$tabla  ." WHERE {$columna} = '{$valor}'";
+        $resultado = self::consultarSQL($query);
+        return array_shift( $resultado ) ;
+    }
+
     // Obtener Registros con cierta cantidad
     public static function get($limite) {
         $query = "SELECT * FROM " . static::$tabla . " LIMIT {$limite}";
