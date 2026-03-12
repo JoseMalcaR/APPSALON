@@ -14,23 +14,25 @@ const paths = {
     js: 'src/js/**/*.js'
 }
 
-export function css( done ) {
-    src(paths.scss, {sourcemaps: true})
-        .pipe( sass({
-            outputStyle: 'compressed'
-        }).on('error', sass.logError) )
-        .pipe( dest('./public/build/css', {sourcemaps: '.'}) );
-    done()
+export function css() {
+    return src(paths.scss, { sourcemaps: true })
+        .pipe(
+            sass({ outputStyle: 'compressed' }).on('error', function(error) {
+                // Log the error and keep watch mode alive.
+                sass.logError.call(this, error)
+                this.emit('end')
+            })
+        )
+        .pipe(dest('./public/build/css', { sourcemaps: '.' }))
 }
 
-export function js( done ) {
-    src(paths.js)
+export function js() {
+    return src(paths.js)
       .pipe(terser())
       .pipe(dest('./public/build/js'))
-    done()
 }
 
-export async function imagenes(done) {
+export async function imagenes() {
     const srcDir = './src/img';
     const buildDir = './public/build/img';
     const images =  await glob('./src/img/**/*')
@@ -40,7 +42,6 @@ export async function imagenes(done) {
         const outputSubDir = path.join(buildDir, relativePath);
         procesarImagenes(file, outputSubDir);
     });
-    done();
 }
 
 function procesarImagenes(file, outputSubDir) {
@@ -73,4 +74,4 @@ export function dev() {
     watch('src/img/**/*.{png,jpg}', imagenes)
 }
 
-export default series( js, css, imagenes, dev )
+export default series(js, css, imagenes, dev);
