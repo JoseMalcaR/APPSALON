@@ -1,6 +1,7 @@
 let paso = 1;
 
 const cita = {
+    id: '',
     nombre: '',
     fecha: '',
     hora: '',
@@ -20,6 +21,7 @@ function iniciarApp() {
 
     consultarAPI(); //Consulta la API en el backend de PHP
 
+    idCliente(); //Agrega el id del cliente a la cita
     nombreCliente(); //Agrega el nombre del cliente a la cita
     seleccionarFecha(); //Agrega la fecha de la cita
     seleccionarHora(); //Agrega la hora de la cita
@@ -177,6 +179,11 @@ function seleccionarServicio(servicio) {
 
 }
 
+function idCliente() {
+    cita.id = document.querySelector('#id').value;// Agrega el valor del input de id al objeto de cita
+}
+
+
 function nombreCliente() {
     cita.nombre = document.querySelector('#nombre').value;// Agrega el valor del input de nombre al objeto de cita
 
@@ -316,7 +323,64 @@ function mostrarResumen() {
     resumen.appendChild(botonReservar);
 }
 
-function reservarCita() {
+async function reservarCita() {
     
-    console.log('Cita reservada');
+    const datos = new FormData();
+    const { nombre, fecha, hora, servicios, id } = cita;
+    const idServicios = servicios.map(servicio => servicio.id).join(','); // Convierte el arreglo de servicios en una cadena separada por comas
+
+    datos.append('usuarioId', id);
+    datos.append('fecha', fecha);
+    datos.append('hora', hora);
+    datos.append('servicios', idServicios);
+
+
+    //Peticion hacia la api
+
+    try {
+    const url = 'http://localhost:8000/api/citas';
+
+    const respuesta = await fetch(url, {
+        method: 'POST',
+        body: datos
+    });
+
+    const respuestaTexto = await respuesta.text();
+    let resultado;
+
+    try {
+        resultado = JSON.parse(respuestaTexto);
+    } catch (parseError) {
+        throw new Error(respuestaTexto || 'La respuesta del servidor no es JSON válido');
+    }
+
+    if(!respuesta.ok) {
+        throw new Error(resultado.mensaje || `Error HTTP: ${respuesta.status}`);
+    }
+
+    console.log(resultado.resultado);
+
+    if(resultado.resultado) {
+        Swal.fire({
+            icon: "success",
+            title: "Cita Reservada",
+            text: "Tu cita ha sido reservada exitosamente!",
+            button: "OK"
+        }).then(() => {
+            setTimeout(() => {
+                window.location.reload(); // Recarga la página después de cerrar la alerta
+            }, 2000);
+        });
+    } else {
+        throw new Error(resultado.mensaje || 'No se pudo guardar la cita');
+    }
+    } catch (error) {
+        Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "Hubo un error al guardar la cita"
+        });
+    }
+
+
 }
